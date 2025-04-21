@@ -11,4 +11,5 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WeatherInfoDto {
     private String description;
+    private String icon;
 }

@@ -15,4 +15,5 @@ public class WeatherResponseDto {
     private MainInfoDto main;
     private List<WeatherInfoDto> weather;
     private String name;
+    private String iconFileName;
 }

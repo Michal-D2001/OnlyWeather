@@ -46,7 +46,7 @@ public class WeatherControllerTest {
     MockMvc mockMvc;
 
     @Test
-    public void testGetWeather() throws Exception{
+    public void testShowWeather() throws Exception{
 
         // --- Prepare Test Data ---
         // Create a sample response object that our mock service will return.
@@ -56,7 +56,7 @@ public class WeatherControllerTest {
         weatherResponseDto.setMain(mainInfoDto);
         weatherResponseDto.setName("London"); // Sample city
         // Sample weather description
-        List<WeatherInfoDto> list1 = List.of(new WeatherInfoDto("clear sky"));
+        List<WeatherInfoDto> list1 = List.of(new WeatherInfoDto("clear sky", "icon.png"));
         weatherResponseDto.setWeather(list1);
 
         // --- Configure the Mock Service (Mockito) ---
@@ -80,7 +80,7 @@ public class WeatherControllerTest {
     }
 
     @Test
-    public void testGetWeather_WhenCityNotFound_ShouldReturnNotFound() throws Exception{
+    public void testShowWeather_WhenCityNotFound_ShouldReturnNotFound() throws Exception{
         String city = "UnknownCity";
         when(weatherService.getWeather(city))
         .thenThrow(new CityNotFoundException("City not found: " + city));
@@ -91,7 +91,7 @@ public class WeatherControllerTest {
     }
 
     @Test
-    public void testGetWeather_WhenApiInvalid_ShouldReturnUnauthorized() throws Exception{
+    public void testShowWeather_WhenApiInvalid_ShouldReturnUnauthorized() throws Exception{
         when(weatherService.getWeather("London"))
         .thenThrow(new InvalidApiKeyException("Invalid ApiKey, try to change it"));
 

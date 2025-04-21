@@ -1,5 +1,6 @@
 package com.onlyweather.OnlyWeather.service;
 
+import com.onlyweather.OnlyWeather.enums.WeatherIcons;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,6 +43,17 @@ public class WeatherService {
         try{
             ResponseEntity<WeatherResponseDto> response = restTemplate.getForEntity(url, WeatherResponseDto.class);
             WeatherResponseDto weatherResponseDto = response.getBody();
+
+            if (weatherResponseDto != null &&
+                weatherResponseDto.getWeather() != null &&
+                !weatherResponseDto.getWeather().isEmpty()){
+
+                    String apiIconCode = weatherResponseDto.getWeather().get(0).getIcon();
+                    WeatherIcons weatherIcon = WeatherIcons.findByApiIconCode(apiIconCode);
+                    if (weatherIcon != null) {
+                        weatherResponseDto.setIconFileName(weatherIcon.getIconFileName());
+                    }
+            }
             return weatherResponseDto;
         } catch (HttpClientErrorException e){
             if(e.getStatusCode() == HttpStatus.NOT_FOUND){
