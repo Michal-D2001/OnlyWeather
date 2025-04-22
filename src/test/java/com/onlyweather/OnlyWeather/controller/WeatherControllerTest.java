@@ -4,12 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.Collections;
 import java.util.List;
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 
 import org.junit.jupiter.api.Test;
@@ -45,19 +43,25 @@ public class WeatherControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    private WeatherResponseDto createSampleWeatherResponseDto(String city, double temp, String description, String iconCode){
+        WeatherResponseDto weatherResponseDto = new WeatherResponseDto();
+
+        MainInfoDto mainInfoDto = new MainInfoDto(temp);
+        WeatherInfoDto weatherInfoDto = new WeatherInfoDto(description, iconCode);
+
+        weatherResponseDto.setMain(mainInfoDto);
+        weatherResponseDto.setWeather(Collections.singletonList(weatherInfoDto));
+        weatherResponseDto.setName(city);
+
+        return weatherResponseDto;
+    }
+
     @Test
     public void testGetWeather() throws Exception{
 
         // --- Prepare Test Data ---
         // Create a sample response object that our mock service will return.
-        WeatherResponseDto weatherResponseDto = new WeatherResponseDto();
-        MainInfoDto mainInfoDto = new MainInfoDto();
-        mainInfoDto.setTemp(5); // Sample temperature
-        weatherResponseDto.setMain(mainInfoDto);
-        weatherResponseDto.setName("London"); // Sample city
-        // Sample weather description
-        List<WeatherInfoDto> list1 = List.of(new WeatherInfoDto("clear sky", "icon.png"));
-        weatherResponseDto.setWeather(list1);
+        WeatherResponseDto weatherResponseDto = createSampleWeatherResponseDto("London", 5.0, "clear sky", "01n");
 
         // --- Configure the Mock Service (Mockito) ---
         // We say: "When someone calls the getWeather method on our mock weatherService
@@ -80,7 +84,7 @@ public class WeatherControllerTest {
     }
 
     @Test
-    public void testShowWeather_View_WhenCityNotFound_ShouldReturnNotFound() throws Exception{
+    public void testGetWeather_View_WhenCityNotFound_ShouldReturnNotFound() throws Exception{
         String city = "UnknownCity";
         when(weatherService.getWeather(city))
         .thenThrow(new CityNotFoundException("City not found: " + city));
@@ -91,12 +95,29 @@ public class WeatherControllerTest {
     }
 
     @Test
-    public void testShowWeather_View_WhenApiInvalid_ShouldReturnUnauthorized() throws Exception{
+    public void testGetWeather_View_WhenApiInvalid_ShouldReturnUnauthorized() throws Exception{
         when(weatherService.getWeather("London"))
         .thenThrow(new InvalidApiKeyException("Invalid ApiKey, try to change it"));
 
         mockMvc.perform(get("/{city}", "London"))
         .andExpect(status().isUnauthorized());
 
+    }
+
+    @Test
+    public void testShowWeather_WhenCalled_ShouldReturnCorrectWeatherView() throws Exception{
+        WeatherResponseDto weatherResponseDto = createSampleWeatherResponseDto("London", 5.5, "clear sky", "01n");
+        weatherResponseDto.setIconFileName("01d@2x.png");
+
+        when(weatherService.getWeather(anyString()))
+                .thenReturn(weatherResponseDto);
+
+        mockMvc.perform(get("/view/{city}", "London"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("weather-view"))
+                .andExpect(model().attribute("city", "London"))
+                .andExpect(model().attribute("temperature", "5.5 °С"))
+                .andExpect(model().attribute("description", "clear sky"))
+                .andExpect(model().attribute("icon", "01d@2x.png"));
     }
 }
