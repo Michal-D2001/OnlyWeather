@@ -59,7 +59,8 @@ public class WeatherService {
             if(e.getStatusCode() == HttpStatus.NOT_FOUND){
                 throw new CityNotFoundException("City not found: " + city);
             }
-            if (e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE) {
+            if (e.getStatusCode() == HttpStatus.SERVICE_UNAVAILABLE ||
+                e.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
                 throw new WeatherServiceUnavailableException("Service unavailable, try again later");
             }
             if (e.getStatusCode() == HttpStatus.UNAUTHORIZED) {

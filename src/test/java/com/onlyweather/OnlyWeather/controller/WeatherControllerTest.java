@@ -46,7 +46,7 @@ public class WeatherControllerTest {
     MockMvc mockMvc;
 
     @Test
-    public void testShowWeather() throws Exception{
+    public void testGetWeather() throws Exception{
 
         // --- Prepare Test Data ---
         // Create a sample response object that our mock service will return.
@@ -70,8 +70,8 @@ public class WeatherControllerTest {
         String expectedJson = objectMapper.writeValueAsString(weatherResponseDto);
 
         // --- Execute and Verify ---
-        // Use MockMvc to simulate sending a GET request to "/weather/London".
-        mockMvc.perform(get("/weather/{city}", "London"))
+        // Use MockMvc to simulate sending a GET request to "/London".
+        mockMvc.perform(get("/{city}", "London"))
         // Check if the server's response has a status of 200 (OK).
         .andExpect(status().isOk())
         // Check if the response body (in JSON format) is exactly
@@ -80,22 +80,22 @@ public class WeatherControllerTest {
     }
 
     @Test
-    public void testShowWeather_WhenCityNotFound_ShouldReturnNotFound() throws Exception{
+    public void testShowWeather_View_WhenCityNotFound_ShouldReturnNotFound() throws Exception{
         String city = "UnknownCity";
         when(weatherService.getWeather(city))
         .thenThrow(new CityNotFoundException("City not found: " + city));
 
-        mockMvc.perform(get("/weather/{city}", city))
+        mockMvc.perform(get("/{city}", city))
         .andExpect(status().isNotFound());
 
     }
 
     @Test
-    public void testShowWeather_WhenApiInvalid_ShouldReturnUnauthorized() throws Exception{
+    public void testShowWeather_View_WhenApiInvalid_ShouldReturnUnauthorized() throws Exception{
         when(weatherService.getWeather("London"))
         .thenThrow(new InvalidApiKeyException("Invalid ApiKey, try to change it"));
 
-        mockMvc.perform(get("/weather/{city}", "London"))
+        mockMvc.perform(get("/{city}", "London"))
         .andExpect(status().isUnauthorized());
 
     }
