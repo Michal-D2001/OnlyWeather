@@ -8,9 +8,11 @@ A simple REST application for retrieving current weather data for cities using t
 - Maven
 - Lombok
 - RestTemplate
+- Thymeleaf
 
 ## Features
 - Fetch current weather data for any city
+- Return simple HTML view using the `/view/{city}` endpoint 
 - Comprehensive exception handling with custom error responses 
 - Clean separation of concerns (Controller, Service, DTO pattern)
 
@@ -72,10 +74,15 @@ mvn spring-boot:run
 |Endpoint|Method|Description|
 |--------|------|-----------|
 |`/{city}`|GET|Returns current weather data for the specified city|
+|`/view/{city}`|GET|Returns the same as `/{city}` but in a HTML view|
 
 ### Example Request
 ```bash
 GET /london
+```
+OR (to get the result in HTML)
+```bash
+GET /view/london
 ```
 
 ### Example Response
@@ -92,6 +99,10 @@ GET /london
   ]
 }
 ```
+
+### Example Response with HTML
+![screenshot-onlyweather-html-response](https://github.com/user-attachments/assets/461e5c45-8ab4-4b54-888a-467be62cd8c0)
+
 
 ## Future Development Plans
 1. **Adding API documentation (Swagger/OpenAPI)**
