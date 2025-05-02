@@ -1,5 +1,12 @@
 package com.onlyweather.OnlyWeather.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping
+@Tag(name = "Weather", description = "API for retrieving weather data")
 public class WeatherController {
     private final WeatherService weatherService;
 
@@ -18,14 +26,30 @@ public class WeatherController {
         this.weatherService = weatherService;
     }
 
+    @Operation(summary = "Get weather data for a city", description = "Returns weather data in JSON format for the specific city")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved weather data",
+                        content = @Content(mediaType = "application/json",
+                        schema = @Schema(implementation = WeatherResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "City not found"),
+            @ApiResponse(responseCode = "500", description = "Weather service unavailable")
+    })
+
     @GetMapping("/{city}")
     @ResponseBody
-    public WeatherResponseDto getWeather(@PathVariable String city){
+    public WeatherResponseDto getWeather(@Parameter(description = "City name") @PathVariable String city){
         return weatherService.getWeather(city);
     }
 
+    @Operation(summary = "Display HTML view with weather data", description = "Returns an HTML page with weather data for the specified city")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved weather data and generated HTML view"),
+            @ApiResponse(responseCode = "404", description = "City not found"),
+            @ApiResponse(responseCode = "500", description = "Weather service unavailable")
+    })
+
     @GetMapping("/view/{city}")
-    public String showWeatherView(@PathVariable String city, Model model){
+    public String showWeatherView(@Parameter(description = "City name") @PathVariable String city, Model model){
         WeatherResponseDto weatherData = weatherService.getWeather(city);
         model.addAttribute("city", weatherData.getName());
         model.addAttribute("temperature", weatherData.getMain().getTemp() + " °С");
