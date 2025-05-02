@@ -13,7 +13,8 @@ A simple REST application for retrieving current weather data for cities using t
 ## Features
 - Fetch current weather data for any city
 - Return simple HTML view using the `/view/{city}` endpoint 
-- Comprehensive exception handling with custom error responses 
+- Comprehensive exception handling with custom error responses
+- Weather condition icons based on current weather state
 - Clean separation of concerns (Controller, Service, DTO pattern)
 
 ## Project Structure
@@ -28,6 +29,8 @@ src/main/java/com/onlyweather/OnlyWeather/
 │   ├── MainInfoDto.java
 │   ├── WeatherInfoDto.java
 │   └── WeatherResponseDto.java
+├── enums/            # Enumeration types
+│   └── WeatherIcons.java #Mapping of weather icons
 ├── exception/            # Exception handling
 │   ├── CityNotFoundException.java
 │   ├── ErrorDetails.java
