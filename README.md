@@ -58,6 +58,7 @@ cd OnlyWeather
 
 2. Create your `application.properties` file:
 - Copy the example below to `src/main/resources/application.properties`
+- Or rename/copy from `application.properties.example` if available
 - Replace with your actual API key
 ```bash 
 spring.application.name=OnlyWeather
@@ -78,6 +79,9 @@ mvn spring-boot:run
 |--------|------|-----------|
 |`/{city}`|GET|Returns current weather data for the specified city|
 |`/view/{city}`|GET|Returns the same as `/{city}` but in a HTML view|
+
+For detailed, interactive API documentation, run the application and visit:
+http://localhost:8080/swagger-ui
 
 ### Example Request
 ```bash
